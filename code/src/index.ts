@@ -2,6 +2,7 @@
 
 import * as e from "express"
 import repository from "./repository"
+//import * as models from "./models"
 
 async function main() {
     const app = e.default()
@@ -9,6 +10,9 @@ async function main() {
     try {
         await db.authenticate();
         console.log('Connection has been established successfully.');
+        console.log('Sync models')
+        await db.sync({ force: true })
+        console.log('All models has been synchronized successfully')
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

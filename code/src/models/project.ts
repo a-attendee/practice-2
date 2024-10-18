@@ -1,5 +1,5 @@
 import * as s from "sequelize"
-import db from "repository"
+import db from "../repository"
 
 export const Organization = db.define(
   'Organization',
