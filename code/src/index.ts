@@ -1,6 +1,9 @@
 // console.log("Hello world") //
 
+import bodyParser from "body-parser"
 import * as e from "express"
+import * as cors from "cors"
+
 import repository from "./repository"
 import router from "./routes/router"
 import config from "./config"
@@ -9,8 +12,10 @@ import config from "./config"
 
 async function main() {
     const app = e.default()
-    // Add json //
+
+    app.use(cors.default())
     app.use(e.json())
+    app.use(bodyParser.json())
 
     // Add routes //
     app.use(router)

@@ -23,40 +23,44 @@ router.get("/hello", (req: e.Request, res: e.Response) => {
 // Create user route //
 // Registration //
 router.post("/auth/reg", val.registration,  async (req: e.Request, res: e.Response): Promise<any> => {
-    // Request validation //
-    const valErrors = validationResult(req)
-    if(!valErrors.isEmpty()) {
-        return res.status(400).json(valErrors.array())
-    }
-
-    // If validation passed then create a new user //
-    const body = req.body
+    try {
 
     
-    // We have to hash password //
-    const password = body.password
-    const salt = await bcrypt.genSalt(10)
-    const passwordHash = await bcrypt.hash(password, salt)
-     
-    // Create a user instance //
-    const user = model.User.build({
-        email: body.email,
-        firstName: body.firstName,
-        lastName: body.lastName,
-        password: passwordHash
-    })
+        // Request validation //
+        const valErrors = validationResult(req)
+        if(!valErrors.isEmpty()) {
+            return res.status(400).json(valErrors.array())
+        }
 
-    try {
-        await user.save()
+        // If validation passed then create a new user //
+        const body = req.body
+
+
+        // We have to hash password //
+        const password = body.password
+        const salt = await bcrypt.genSalt(10)
+        const passwordHash = await bcrypt.hash(password, salt)
+
+
+        // Create a user instance //
+        const user = model.User.build({
+            email: body.email,
+            firstName: body.firstName,
+            lastName: body.lastName,
+            salt: passwordHash
+        })
+
+            await user.save()
+        return res.status(200).json({
+            success: true,
+        })
+
     } catch (err) {
         return res.status(500).json({
             success: false,
         })
     }
-    
-    return res.status(200).json({
-        success: true,
-    })
+
 
 })
 
@@ -77,6 +81,15 @@ router.post("/auth/login",val.auth, async (req: e.Request, res: e.Response): Pro
     res.json({
         success: true,
         token,
+    })
+})
+
+router.get("/user/getAll", async (req: e.Request, res: e.Response) => {
+    const users = await model.User.findAll()
+
+    res.json({
+        users: users,
+        success: true,
     })
 })
 
