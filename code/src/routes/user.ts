@@ -2,15 +2,12 @@ import * as e from "express"
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { validationResult } from "express-validator"
-
 import router from "./router"
 import * as model from "../models/models"
-import * as val from "../validations/auth"
+import * as val from "../validations/user"
 import config from "../config"
 
 const jwtSecret = config.jwtSecret
-
-// User routes //
 
 // Create user route //
 // Registration //
@@ -118,8 +115,9 @@ router.put("/user/update/:id", val.update,  async (req: e.Request, res: e.Respon
 
 
         const body = req.body
+        const id = req.param("id")
         
-        const user = await model.User.findOne({ where: { email: body.email } })
+        const user = await model.User.findOne({ where: { id: id } })
         if(!user) {
             return res.json({
                 success:false
@@ -164,15 +162,50 @@ router.put("/user/update/:id", val.update,  async (req: e.Request, res: e.Respon
 })
 
 // Make user admin //
-router.post("/user/make/admin", (req: e.Request, res: e.Response) => {
+router.post("/user/make/admin/", async (req: e.Request, res: e.Response): Promise<any> => {
+    const body = req.body
+
+    const user = await model.User.findOne({ where: { id: body.adminUserId } })
+    if(!user) {
+        return res.json({
+            success: false
+        }).status(404)
+    }
+
+    const admin = model.Admin.build({
+        userid: body.adminUserId
+    })
+    await admin.save()
+    
+    return res.json({
+        success: false
+    }).status(200)
 
 })
 
 // Make user donater //
-router.post("/user/make/donater", (req: e.Request, res: e.Response) => {
+router.post("/user/make/donater/", async (req: e.Request, res: e.Response): Promise<any> => {
+    const body = req.body
+
+    const user = await model.User.findOne({ where: { id: body.donaterUserId } })
+    if(!user) {
+        return res.json({
+            success: false
+        }).status(404)
+    }
+
+    const donater = model.Donater.build({
+        userid: body.adminUserId,
+        money: 0
+    })
+    
+    await donater.save()
+ 
+    return res.json({
+        success: false
+    }).status(200)
 
 })
-
 
 // Remove user route //
 router.delete("/user/remove/:id", async (req: e.Request, res: e.Response): Promise<any> => {
