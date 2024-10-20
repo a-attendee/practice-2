@@ -1,8 +1,10 @@
 // console.log("Hello world") //
 
+import bcrypt from 'bcrypt'
 import bodyParser from "body-parser"
 import * as e from "express"
 import * as cors from "cors"
+import { validationResult } from "express-validator"
 
 import repository from "./repository"
 import router from "./routes/router"
@@ -27,7 +29,7 @@ async function main() {
         console.log('Connection has been established successfully.');
 
         console.log('Sync models')
-        await db.sync({ force: true })
+        await db.sync()
 
         console.log('All models has been synchronized successfully')
     } catch (error) {
