@@ -18,3 +18,8 @@ export const update = [
     val.body("lastName").isString().optional(),
     val.body("password").isString().isLength({ min: 8, max: 30 }).optional()
 ]
+
+export const donaterAddMoney = [
+    val.body("donaterId").notEmpty().isNumeric(),
+    val.body("money").notEmpty().isNumeric(),
+]

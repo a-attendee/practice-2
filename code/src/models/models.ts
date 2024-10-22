@@ -59,9 +59,6 @@ export const Donater = db.define(
       primaryKey: true,
       autoIncrement: true
     },
-    user_id: {
-      type: s.DataTypes.INTEGER,
-    },
     money: {
       type: s.DataTypes.INTEGER,
     },
@@ -112,24 +109,23 @@ export const Project = db.define(
     },
     expectedMoneyRise: {
       type: s.DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
     },
     actualMoneyRise: {
       type: s.DataTypes.INTEGER,
       allowNull: false,
     },    
     startDate: {
-      type: s.DataTypes.TIME,
+      type: s.DataTypes.STRING,
       allowNull: false,
     },
     endDate: {
-      type: s.DataTypes.TIME,
+      type: s.DataTypes.STRING,
       allowNull: true,
     },
     status: {
-      type: s.DataTypes.ENUM,
-      values:  ['active', 'pending', 'inactive'],
-      allowNull: false
+      type: s.DataTypes.STRING,
+      allowNull: true
     }
   }
 )
@@ -138,11 +134,6 @@ export const Project = db.define(
 export const HistoryDonations = db.define(
   "HistoryDonations", 
   {
-    id: {
-      type: s.DataTypes.NUMBER,
-      primaryKey: true,
-      allowNull: false,
-    },
     moneyDonated: {
       type: s.DataTypes.NUMBER,
       allowNull: false
@@ -152,12 +143,7 @@ export const HistoryDonations = db.define(
 // This is a join table for project and organization //
 export const ProjectOrganization = db.define(
   "ProjectOrganization",
-  {
-    moneyDonated: {
-      type: s.DataTypes.NUMBER,
-      allowNull: false
-    }
-  }
+  {}
 )
 
 // This is a join table for admin and project models //
@@ -176,27 +162,29 @@ export const AdminOrganization = db.define(
 
 // User roles //
 // Relation: has one
-Admin.belongsTo(User)
+// Admin.belongsTo(User)
+
+User.hasOne(Donater)
 Donater.belongsTo(User)
 
 // Project admins //
 // Relation: many to many //
-Admin.belongsToMany(Project, {through: AdminProject})
-Project.belongsToMany(Admin, {through: AdminProject})
+Admin.belongsToMany(Project, {through: "AdminProjects"})
+Project.belongsToMany(Admin, {through: "AdminProjects"})
 
 // Admin organizations //
 // Relation: many to many //
-Admin.belongsToMany(Organization, {through: AdminOrganization})
-Organization.belongsToMany(Admin, {through: AdminOrganization})
+Admin.belongsToMany(Organization, {through: "AdminOrganizations"})
+Organization.belongsToMany(Admin, {through: "AdminOrganizations"})
 
 // User donations //
 // Relation: many to many //
-Donater.belongsToMany(Project, {through: HistoryDonations})
-Project.belongsToMany(Donater, {through: HistoryDonations})
+Donater.belongsToMany(Project, {through: "HistoryDonations"})
+Project.belongsToMany(Donater, {through: "HistoryDonations"})
 
 // Organization projects //
 // Relation: many to many //
-Project.belongsToMany(Organization, {through: ProjectOrganization})
-Organization.belongsToMany(Project, {through: ProjectOrganization})
+Project.belongsToMany(Organization, {through: "ProjectOrganization"})
+Organization.belongsToMany(Project, {through: "ProjectOrganization"})
 
 

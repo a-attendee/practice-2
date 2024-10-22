@@ -1,13 +1,13 @@
 import * as e from "express"
 import { validationResult } from "express-validator"
 
-import router from "./router"
 import * as model from "../models/models"
 import * as orgVal from "../validations/organization"
 
+const router = e.Router()
 
 // Get all organizations //
-router.post("/organization/getAll", async (req: e.Request, res: e.Response): Promise<any> => {
+router.get("/organization/getAll", async (req: e.Request, res: e.Response): Promise<any> => {
     const org = await model.Organization.findAll()
 
     if(!org) {
@@ -23,7 +23,7 @@ router.post("/organization/getAll", async (req: e.Request, res: e.Response): Pro
 })
 
 // Get by organization by id //
-router.post("/organization/get/:id", async (req: e.Request, res: e.Response): Promise<any> => {
+router.get("/organization/get/:id", async (req: e.Request, res: e.Response): Promise<any> => {
     const paramId = req.param("id")
     if(!paramId) {
         return res.json({
@@ -65,8 +65,9 @@ router.post("/organization/create", orgVal.registration, async (req: e.Request, 
     }).status(200)
 })
 
+
 // Update organization route //
-router.post("/organization/update/:name", orgVal.update, async (req: e.Request, res: e.Response): Promise<any> => {
+router.put("/organization/update/:id", orgVal.update, async (req: e.Request, res: e.Response): Promise<any> => {
     // Request validation //
     const valErrors = validationResult(req)
     if(!valErrors.isEmpty()) {
@@ -74,9 +75,9 @@ router.post("/organization/update/:name", orgVal.update, async (req: e.Request, 
     }
 
     const body = req.body
-    const oldName = req.param("oldName")
+    const id = req.param("id")
 
-    const org = await model.Organization.findOne({where: { name: oldName }})
+    const org = await model.Organization.findOne({where: { id: id }})
     if(!org) {
         return res.json({
             success:false
@@ -105,8 +106,47 @@ router.post("/organization/update/:name", orgVal.update, async (req: e.Request, 
 
 })
 
+
+// Organization should add admins to manage projects //
+router.post("/organization/add/admin", orgVal.addAdmin, async (req: e.Request, res: e.Response): Promise<any> => {
+    // Request validation //
+    const valErrors = validationResult(req)
+    if(!valErrors.isEmpty()) {
+        return res.status(400).json(valErrors.array())
+    }
+
+    const body = req.body
+
+    const org = await model.Organization.findByPk(body.organizationId)
+    if(!org) {
+        return res.json({
+            success:false
+        }).status(404)
+    }
+    const admin = await model.Admin.findByPk(body.adminId)
+    if(!admin) {
+        return res.json({
+            success:false
+        }).status(404)
+    }
+
+    const orgId = org.get("id")
+    const adminId = admin.get("id")
+
+    await model.AdminProject.create({ 
+        OrganizationId: orgId,
+        AdminId: adminId
+    })
+
+
+
+    return res.json({
+        success: true
+    }).status(200)
+})
+
 // Remove organization route //
-router.post("/organization/remove/:id", async (req: e.Request, res: e.Response): Promise<any> => {
+router.delete("/organization/remove/:id", async (req: e.Request, res: e.Response): Promise<any> => {
     const paramId = req.param("id")
     if(!paramId) {
         return res.status(400)
@@ -127,3 +167,5 @@ router.post("/organization/remove/:id", async (req: e.Request, res: e.Response):
 
 
 })
+
+export default router

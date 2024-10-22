@@ -2,13 +2,12 @@ import * as e from "express"
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { validationResult } from "express-validator"
-import router from "./router"
 import * as model from "../models/models"
 import * as val from "../validations/user"
 import config from "../config"
 
 const jwtSecret = config.jwtSecret
-
+const router = e.Router()
 // Create user route //
 // Registration //
 router.post("/auth/reg", val.registration,  async (req: e.Request, res: e.Response): Promise<any> => {
@@ -165,7 +164,7 @@ router.put("/user/update/:id", val.update,  async (req: e.Request, res: e.Respon
 router.post("/user/make/admin/", async (req: e.Request, res: e.Response): Promise<any> => {
     const body = req.body
 
-    const user = await model.User.findOne({ where: { id: body.adminUserId } })
+    const user = await model.User.findByPk(body.userId)
     if(!user) {
         return res.json({
             success: false
@@ -173,12 +172,35 @@ router.post("/user/make/admin/", async (req: e.Request, res: e.Response): Promis
     }
 
     const admin = model.Admin.build({
-        userid: body.adminUserId
+        userId: body.userId
     })
     await admin.save()
     
     return res.json({
-        success: false
+        success: true
+    }).status(200)
+
+})
+
+
+// This route is used to know what projects does admin manages //
+router.get("/user/admin/:id/projects", async (req: e.Request, res: e.Response): Promise<any> => {
+    const body = req.body
+    const id = req.param("id")
+
+    const projects = await model.AdminProject.findAll({
+        where:{ userId: id }
+    })
+
+    if(!projects) {
+        return res.json({
+            success: false
+        }).status(404)
+    }
+
+    return res.json({
+        projects: projects,
+        success: true
     }).status(200)
 
 })
@@ -187,22 +209,57 @@ router.post("/user/make/admin/", async (req: e.Request, res: e.Response): Promis
 router.post("/user/make/donater/", async (req: e.Request, res: e.Response): Promise<any> => {
     const body = req.body
 
-    const user = await model.User.findOne({ where: { id: body.donaterUserId } })
+    const user = await model.User.findByPk(body.userId)
     if(!user) {
         return res.json({
             success: false
         }).status(404)
     }
-
+    
+    const userId = user.get("id")
     const donater = model.Donater.build({
-        userid: body.adminUserId,
+        UserId: userId,
         money: 0
     })
     
     await donater.save()
  
     return res.json({
+        success: true
+    }).status(200)
+
+})
+
+
+router.get("/user/donater/getAll", val.donaterAddMoney, async (req: e.Request, res: e.Response): Promise<any> => {
+    const donaters = await model.Donater.findAll()
+    
+    return res.json({
+        donaters: donaters,
         success: false
+    }).status(404)
+
+})
+
+router.post("/user/donater/addMoney", val.donaterAddMoney, async (req: e.Request, res: e.Response): Promise<any> => {
+    // Request validation //
+    const valErrors = validationResult(req)
+    if(!valErrors.isEmpty()) {
+        return res.status(400).json(valErrors.array())
+    }
+
+    const body = req.body
+    const donater = await model.Donater.findByPk(body.donaterId)
+    if(!donater) {
+        return res.json({
+            success: false
+        }).status(404)
+    }
+
+    await donater.increment("money", { by: body.money })
+
+    return res.json({
+        success: true
     }).status(200)
 
 })
@@ -224,4 +281,4 @@ router.delete("/user/remove/:id", async (req: e.Request, res: e.Response): Promi
     }).status(200)
 })
 
-
+export default router
