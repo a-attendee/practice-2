@@ -1,20 +1,16 @@
-import Container from "@mui/material/Container";
-
-import { Header } from "./components";
-import { Home, FullPost, Registration, AddPost, Login } from "./pages";
+import './App.css';
+import AuthForm from './AuthForm';
+import ProjectForm from './ProjectForm'
+import OrganizationForm from './OrganizationForm';
+import './styles.css';
 
 function App() {
   return (
-    <>
-      <Header />
-      <Container maxWidth="lg">
-        <Home />
-        {/*<FullPost />*/}
-        {/*<AddPost />*/}
-        {/*<Login />*/}
-        {/*<Registration />*/}
-      </Container>
-    </>
+    <div className="App">
+      // <AuthForm />
+      // <ProjectForm />
+      <OrganizationForm />
+    </div>
   );
 }
 
