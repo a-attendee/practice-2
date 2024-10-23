@@ -2,13 +2,26 @@
 // for sequelize first section of file defines user //
 
 import * as s from "sequelize"
+import { DataTypes, Model, Optional  } from 'sequelize';
 import db from "../repository"
 
+interface UserAttributes {
+  id: number;
+  firstName: string
+  lastName: string
+  email: string
+  salt: string
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
+
+
+
+
 // Basic user //
-export const User = db.define(
+export const User = db.define<Model<any, UserCreationAttributes>>(
   'User',
   {
-
     // Model attributes are defined here
     id: {
       type: s.DataTypes.INTEGER,

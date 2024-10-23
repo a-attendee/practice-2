@@ -1,16 +1,38 @@
 import * as e from "express"
 import { validationResult } from "express-validator"
+import * as excel from "exceljs"
 
 import * as model from "../models/models"
 import * as projectVal from "../validations/project"
+import getReport from "../utils/report"
 
 const router = e.Router()
+
+// Get all donations to project and generate excel report //
+router.get("/project/:id/report", async (req: e.Request, res: e.Response): Promise<any> => {
+    const projectId = Number(req.param("id"))
+    
+    const records = await getReport(1) 
+    if(!records) {
+        return res.json({
+            message: "not found",
+            success: false
+        }).status(404)
+    }
+
+    return res.json({
+        records: records,
+        success: true
+    }).status(200)
+    
+})
 
 // Get all donations //
 router.get("/project/getAllDonations",  async (req: e.Request, res: e.Response): Promise<any> => {
    
     const body = req.body
     const donations = await model.HistoryDonations.findAll({where: { ProjectId: body.projectId }})
+
     if(!donations) {
         return res.json({
             message: "not found",
