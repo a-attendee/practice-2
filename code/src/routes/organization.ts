@@ -44,6 +44,23 @@ router.get("/organization/get/:id", async (req: e.Request, res: e.Response): Pro
     }).status(200)
 })
 
+// Get all project related to organization //
+router.get("/organization/get/projects", async (req: e.Request, res: e.Response): Promise<any> => {
+    
+    const body = req.body
+    const projects = await model.ProjectOrganization.findAll({where: { OrganizationId: body.organizationId }})
+    if(!projects) {
+        return res.json({
+            message: "not found",
+            success: false
+        }).status(404)
+    }
+    
+    return res.json({
+        projects: projects,
+        success: false
+    }).status(404)
+})
 
 // Create  organization route //
 router.post("/organization/create", orgVal.registration, async (req: e.Request, res: e.Response): Promise<any> => {

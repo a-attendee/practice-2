@@ -244,7 +244,7 @@ router.get("/user/donater/getAllDonations",  async (req: e.Request, res: e.Respo
     }
     
     return res.json({
-        message: "not found",
+        donations: donations,
         success: false
     }).status(404)
 })

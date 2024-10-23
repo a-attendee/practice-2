@@ -6,8 +6,26 @@ import * as projectVal from "../validations/project"
 
 const router = e.Router()
 
+// Get all donations //
+router.get("/project/getAllDonations",  async (req: e.Request, res: e.Response): Promise<any> => {
+   
+    const body = req.body
+    const donations = await model.HistoryDonations.findAll({where: { ProjectId: body.projectId }})
+    if(!donations) {
+        return res.json({
+            message: "not found",
+            success: false
+        }).status(404)
+    }
+    
+    return res.json({
+        donations: donations,
+        success: false
+    }).status(404)
+})
+
 // Donation route //
-router.post("/project/donate",projectVal.donate, async (req: e.Request, res: e.Response): Promise<any> => {
+router.post("/project/donate", projectVal.donate, async (req: e.Request, res: e.Response): Promise<any> => {
     // Request validation //
     const valErrors = validationResult(req)
     if(!valErrors.isEmpty()) {
@@ -17,7 +35,7 @@ router.post("/project/donate",projectVal.donate, async (req: e.Request, res: e.R
     const body = req.body
 
     const donater = await model.Donater.findByPk(body.donaterId)
-    
+   
     if(!donater) {
         return res.json({
             message: "donater not found",
@@ -76,6 +94,24 @@ router.get("/project/getAll", async (req: e.Request, res: e.Response): Promise<a
         projects: projects,
         success: true
     }).status(200)
+})
+
+// Get all organizations related to project //
+router.get("/project/get/:id", async (req: e.Request, res: e.Response): Promise<any> => {
+    
+    const body = req.body
+    const organizations = await model.ProjectOrganization.findAll({where: { ProjectId: body.projectId }})
+    if(!organizations) {
+        return res.json({
+            message: "not found",
+            success: false
+        }).status(404)
+    }
+    
+    return res.json({
+        organizations: organizations,
+        success: false
+    }).status(404)
 })
 
 // Get by project by id //
