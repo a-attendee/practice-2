@@ -17,7 +17,7 @@ router.get("/organization/getAll", async (req: e.Request, res: e.Response): Prom
     }
 
     return res.json({
-        projects: org,
+        organizations: org,
         success: true
     }).status(200)
 })

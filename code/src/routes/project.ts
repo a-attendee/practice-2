@@ -97,10 +97,10 @@ router.get("/project/getAll", async (req: e.Request, res: e.Response): Promise<a
 })
 
 // Get all organizations related to project //
-router.get("/project/get/:id", async (req: e.Request, res: e.Response): Promise<any> => {
-    
+router.get("/project/organization/get/", async (req: e.Request, res: e.Response): Promise<any> => {
+     
     const body = req.body
-    const organizations = await model.ProjectOrganization.findAll({where: { ProjectId: body.projectId }})
+    const organizations = await model.ProjectOrganization.findAll({where: { projectId: body.projectId }})
     if(!organizations) {
         return res.json({
             message: "not found",
@@ -110,7 +110,7 @@ router.get("/project/get/:id", async (req: e.Request, res: e.Response): Promise<
     
     return res.json({
         organizations: organizations,
-        success: false
+        success: true
     }).status(404)
 })
 
@@ -210,13 +210,14 @@ router.post("/project/add/organization", projectVal.addOrganization, async (req:
         }).status(404)
     }
 
-    const link = model.ProjectOrganization.build({ 
-        projectId: body.projectId,
-        organizationId: body.organizationId
+    await model.ProjectOrganization.create({ 
+        ProjectId: body.projectId,
+        OrganizationId: body.organizationId
     })
 
-    await link.save()
-
+    return res.json({
+        success: true
+    }).status(200)
 
 })
 

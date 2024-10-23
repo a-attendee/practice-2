@@ -4,13 +4,13 @@ import './ProjectForm.css'; // Import the CSS file
 const ProjectForm = () => {
     // Hard-coded values
     const projectData = {
-        name: "Helping Hands Charity",
-        description: "We aim to provide support and resources to underprivileged communities.",
-        expectedMoneyRise: 50000,
-        actualMoneyRise: 30000,
-        startDate: "2023-01-01",
-        endDate: "2023-12-31",
-        status: "active"
+        name: "Дайте денег",
+        description: "Дайте денег пж",
+        expectedMoneyRise: 300,
+        actualMoneyRise: 200,
+        startDate: "today",
+        endDate: "-_-",
+        status: "Getting started"
     };
 
     const handleSubmit = (e) => {
@@ -55,7 +55,7 @@ const ProjectForm = () => {
                         <option value="completed">Completed</option>
                     </select>
                 </div>
-                <button type="submit" className="submit-button">Submit</button>
+                <button type="submit" className="submit-button">Fetch</button>
             </form>
         </div>
     );

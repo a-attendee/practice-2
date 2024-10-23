@@ -133,7 +133,14 @@ export const Project = db.define(
 // This model is user as join table and history for donates //
 export const HistoryDonations = db.define(
   "HistoryDonations", 
+  
   {
+    id: {
+      type: s.DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     moneyDonated: {
       type: s.DataTypes.NUMBER,
       allowNull: false
@@ -143,7 +150,14 @@ export const HistoryDonations = db.define(
 // This is a join table for project and organization //
 export const ProjectOrganization = db.define(
   "ProjectOrganization",
-  {}
+  {
+    id: {
+      type: s.DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    }
+  },
 )
 
 // This is a join table for admin and project models //
@@ -179,12 +193,29 @@ Organization.belongsToMany(Admin, {through: "AdminOrganizations"})
 
 // User donations //
 // Relation: many to many //
-Donater.belongsToMany(Project, {through: "HistoryDonations"})
-Project.belongsToMany(Donater, {through: "HistoryDonations"})
+Donater.belongsToMany(Project, {
+  through: {
+    model: HistoryDonations, 
+    unique: false
+}})
+
+Project.belongsToMany(Donater, {
+  through: {
+    model: HistoryDonations, 
+    unique: false
+}})
 
 // Organization projects //
 // Relation: many to many //
-Project.belongsToMany(Organization, {through: "ProjectOrganization"})
-Organization.belongsToMany(Project, {through: "ProjectOrganization"})
+Project.belongsToMany(Organization, {
+  through: {
+    model: ProjectOrganization, 
+    unique: false
+}})
+
+Organization.belongsToMany(Project, {through: {
+    model: ProjectOrganization,
+    unique: false
+}})
 
 

@@ -34,7 +34,7 @@ const AuthForm = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="submit-button">Submit</button>
+                <button type="submit" className="submit-button">Authorize</button>
             </form>
         </div>
     );
