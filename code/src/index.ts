@@ -1,10 +1,8 @@
 // console.log("Hello world") //
 
-import bcrypt from 'bcrypt'
 import bodyParser from "body-parser"
 import * as e from "express"
 import * as cors from "cors"
-import { validationResult } from "express-validator"
 
 import repository from "./repository"
 import router from "./routes/router"

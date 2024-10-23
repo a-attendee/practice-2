@@ -2,7 +2,8 @@ import * as e from "express"
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { validationResult } from "express-validator"
-import * as model from "../models/models"
+import * as model from "../models/models" 
+import jwtAuth from "../utils/auth"
 import * as val from "../validations/user"
 import config from "../config"
 
@@ -95,7 +96,7 @@ router.post("/auth/login", val.auth, async (req: e.Request, res: e.Response): Pr
     }
 })
 
-router.get("/user/getAll", async (req: e.Request, res: e.Response) => {
+router.get("/user/getAll", jwtAuth,  async (req: e.Request, res: e.Response) => {
     const users = await model.User.findAll()
 
     res.json({
@@ -230,10 +231,27 @@ router.post("/user/make/donater/", async (req: e.Request, res: e.Response): Prom
 
 })
 
+// Get all user donations //
+router.get("/user/donater/getAllDonations",  async (req: e.Request, res: e.Response): Promise<any> => {
+   
+    const body = req.body
+    const donations = await model.HistoryDonations.findAll({where: { DonaterId: body.donaterId }})
+    if(!donations) {
+        return res.json({
+            message: "not found",
+            success: false
+        }).status(404)
+    }
+    
+    return res.json({
+        message: "not found",
+        success: false
+    }).status(404)
+})
 
 router.get("/user/donater/getAll", val.donaterAddMoney, async (req: e.Request, res: e.Response): Promise<any> => {
     const donaters = await model.Donater.findAll()
-    
+
     return res.json({
         donaters: donaters,
         success: false

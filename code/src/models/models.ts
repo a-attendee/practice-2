@@ -66,7 +66,7 @@ export const Donater = db.define(
 )
 
 // This section defines models related to donation projects //
-
+//
 export const Organization = db.define(
   'Organization',
   {
