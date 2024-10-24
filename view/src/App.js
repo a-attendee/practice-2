@@ -8,7 +8,7 @@ import './styles.css';
 function App() {
   return (
     <div className="App">
-      <AuthForm />
+      <ProjectForm />
     </div>
   );
 }
