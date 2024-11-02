@@ -6,6 +6,8 @@ import * as orgVal from "../validations/organization"
 
 const router = e.Router()
 
+
+
 // Get all organizations //
 router.get("/organization/getAll", async (req: e.Request, res: e.Response): Promise<any> => {
     const org = await model.Organization.findAll()
